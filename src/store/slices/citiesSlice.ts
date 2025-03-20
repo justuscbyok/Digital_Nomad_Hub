@@ -213,6 +213,21 @@ export const citiesSlice = createSlice({
       state.filteredCities = mockCities;
       state.loading = false;
       state.error = null;
+    },
+    saveUserPreferences: (state) => {
+      // Save the current filters to localStorage
+      localStorage.setItem('userPreferences', JSON.stringify(state.filters));
+    },
+    loadUserPreferences: (state) => {
+      // Load saved preferences from localStorage
+      const savedPreferences = localStorage.getItem('userPreferences');
+      if (savedPreferences) {
+        try {
+          state.filters = JSON.parse(savedPreferences);
+        } catch (e) {
+          console.error('Error loading saved preferences:', e);
+        }
+      }
     }
   },
   extraReducers: (builder) => {
@@ -252,7 +267,9 @@ export const {
   clearSelectedCities,
   updateFilters,
   resetFilters,
-  useMockData
+  useMockData,
+  saveUserPreferences,
+  loadUserPreferences
 } = citiesSlice.actions;
 
 export default citiesSlice.reducer;

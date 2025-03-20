@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useAppDispatch, useAppSelector } from './hooks';
 import { checkAuth } from './store/slices/authSlice';
+import { loadUserPreferences } from './store/slices/citiesSlice';
 import AuthLayout from './components/Auth/AuthLayout';
 import SignIn from './components/Auth/SignIn';
 import SignUp from './components/Auth/SignUp';
@@ -12,7 +13,11 @@ function App() {
   const { isAuthenticated, loading } = useAppSelector((state) => state.auth);
 
   useEffect(() => {
+    // Check authentication status
     dispatch(checkAuth());
+    
+    // Load saved user preferences
+    dispatch(loadUserPreferences());
   }, [dispatch]);
 
   if (loading) {

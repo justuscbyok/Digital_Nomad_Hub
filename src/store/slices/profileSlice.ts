@@ -1,16 +1,9 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import type { PayloadAction } from '@reduxjs/toolkit';
 import api from '../../services/api';
+import { mockApi, UserProfile } from '../../services/mockApi';
 
-interface UserProfile {
-  id: string;
-  email: string;
-  name: string;
-  preferences: {
-    theme: 'light' | 'dark';
-    notifications: boolean;
-  };
-}
+export type { UserProfile } from '../../services/mockApi';
 
 interface ProfileState {
   profile: UserProfile | null;
@@ -27,16 +20,28 @@ const initialState: ProfileState = {
 export const fetchProfile = createAsyncThunk(
   'profile/fetchProfile',
   async () => {
-    const response = await api.get('/profile');
-    return response.data;
+    try {
+      // Try to use real API first
+      const response = await api.get('/profile');
+      return response.data;
+    } catch (error) {
+      // Fall back to mock API if real API fails
+      return await mockApi.getProfile();
+    }
   }
 );
 
 export const updateProfile = createAsyncThunk(
   'profile/updateProfile',
   async (profile: Partial<UserProfile>) => {
-    const response = await api.patch('/profile', profile);
-    return response.data;
+    try {
+      // Try to use real API first
+      const response = await api.patch('/profile', profile);
+      return response.data;
+    } catch (error) {
+      // Fall back to mock API if real API fails
+      return await mockApi.updateProfile(profile);
+    }
   }
 );
 

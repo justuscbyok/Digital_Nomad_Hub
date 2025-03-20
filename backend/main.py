@@ -7,8 +7,8 @@ from typing import List, Optional
 import jwt
 import json
 from google.cloud import bigquery
-from . import schemas
-from . import crud
+import schemas
+import crud
 import os
 
 # Get the absolute path of the JSON key file
@@ -39,9 +39,6 @@ ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
-# Load mock data
-with open('backend/mock_data/cities.json', 'r') as f:
-    cities_data = json.load(f)
 
 # -----------------------
 # 🔹 JWT Token Functions
@@ -74,6 +71,7 @@ async def get_current_user(token: str = Depends(oauth2_scheme)):
 # -----------------------
 # 🔹 Authentication Routes
 # -----------------------
+# Note: Token endpoint is deliberately unprotected to allow users to authenticate
 @app.post("/token", response_model=schemas.Token)
 async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends()):
     user = crud.authenticate_user(form_data.username, form_data.password)
@@ -89,6 +87,7 @@ async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(
 # -----------------------
 # 🔹 User Routes
 # -----------------------
+# Note: User registration endpoint is deliberately unprotected to allow new users to register
 @app.post("/users/", response_model=schemas.User)
 def create_user(user: schemas.UserCreate):
     existing_user = crud.get_user_by_email(user.email)
@@ -108,7 +107,7 @@ async def update_preferences(preferences: schemas.UserPreferenceBase, current_us
 # 🔹 City Routes
 # -----------------------
 @app.get("/cities")
-async def get_cities(limit: int = Query(50, ge=1, le=100), offset: int = Query(0, ge=0)):
+async def get_cities(current_user: dict = Depends(get_current_user), limit: int = Query(50, ge=1, le=100), offset: int = Query(0, ge=0)):
     try:
         query = """
             SELECT id, name, country, lat, lng, 
@@ -186,7 +185,7 @@ async def get_cities(limit: int = Query(50, ge=1, le=100), offset: int = Query(0
         return {"cities": cities_data["cities"]}
 
 @app.get("/cities/{city_id}", response_model=schemas.City)
-async def get_city(city_id: str):
+async def get_city(city_id: str, current_user: dict = Depends(get_current_user)):
     city = next((city for city in cities_data["cities"] if city["id"] == city_id), None)
     if not city:
         raise HTTPException(status_code=404, detail="City not found")
@@ -206,7 +205,7 @@ async def get_plans(current_user: dict = Depends(get_current_user), skip: int = 
 
 
 @app.get("/populate_cities")
-async def populate_cities(limit: int = Query(50, ge=1, le=100), offset: int = Query(0, ge=0)):
+async def populate_cities(current_user: dict = Depends(get_current_user), limit: int = Query(50, ge=1, le=100), offset: int = Query(0, ge=0)):
     try:
         query = """
             SELECT id, name, country, lat, lng, 
@@ -285,6 +284,7 @@ async def populate_cities(limit: int = Query(50, ge=1, le=100), offset: int = Qu
 
 @app.get("/filter_cities")
 async def filter_cities(
+    current_user: dict = Depends(get_current_user),
     min_temp: Optional[str] = None,  # Keep it as STRING
     max_temp: Optional[str] = None,
     max_cost: Optional[str] = None,
@@ -401,6 +401,6 @@ async def filter_cities(
 # -----------------------
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run("backend.main:app", host="0.0.0.0", port=8000, reload=True)
+    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
 
 
