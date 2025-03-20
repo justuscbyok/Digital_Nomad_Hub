@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { SlidersHorizontal, Users, Wifi, Heart, DollarSign, ThermometerSun, Shield, Guitar as Hospital, Wind, MapPin, Globe, Zap, RefreshCw, Map, Image } from 'lucide-react';
+import { SlidersHorizontal, Users, Wifi, Heart, DollarSign, ThermometerSun, Shield, Guitar as Hospital, Wind, MapPin, Globe, Zap, RefreshCw, Map, Image, BookmarkPlus } from 'lucide-react';
 import { Disclosure } from '@headlessui/react';
 import { City } from '../../types';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../store';
-import { updateFilters, resetFilters, fetchFilteredCities } from '../../store/slices/citiesSlice';
+import { updateFilters, resetFilters, fetchFilteredCities, saveUserPreferences, loadUserPreferences } from '../../store/slices/citiesSlice';
 import { AppDispatch } from '../../store';
 
 // Mapbox API token - in a real app, this would come from environment variables
@@ -244,6 +244,12 @@ export default function Discover({ cities }: DiscoverProps) {
   const [showMaps, setShowMaps] = useState<boolean>(false);
   const [imageErrors, setImageErrors] = useState<Record<string, boolean>>({});
   const [cityImageIndices, setCityImageIndices] = useState<Record<string, number>>({});
+  const [savedMessageVisible, setSavedMessageVisible] = useState(false);
+
+  // Load saved preferences on component mount
+  useEffect(() => {
+    dispatch(loadUserPreferences());
+  }, [dispatch]);
 
   const handleFilterChange = (category: string, subCategory: string, value: any) => {
     dispatch(updateFilters({
@@ -256,8 +262,17 @@ export default function Discover({ cities }: DiscoverProps) {
 
   const resetAllFilters = () => {
     dispatch(resetFilters());
-    // After resetting filters, fetch all cities
     dispatch(fetchFilteredCities(initialFilters));
+  };
+
+  const saveAllPreferences = () => {
+    dispatch(saveUserPreferences());
+    // Show saved message
+    setSavedMessageVisible(true);
+    // Hide the message after 3 seconds
+    setTimeout(() => {
+      setSavedMessageVisible(false);
+    }, 3000);
   };
 
   const toggleArrayFilter = (array: string[], item: string) => {
@@ -380,13 +395,27 @@ export default function Discover({ cities }: DiscoverProps) {
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-xl font-semibold">Filters</h2>
           <div className="flex items-center space-x-4">
-            <button 
-              onClick={resetAllFilters}
-              className="flex items-center px-3 py-1 bg-gray-100 hover:bg-gray-200 rounded-md text-sm"
-            >
-              <RefreshCw className="h-4 w-4 mr-1" />
-              Reset Filters
-            </button>
+            <div className="flex items-center gap-2 mt-2">
+              <button
+                className="inline-flex items-center gap-1 text-sm font-semibold text-gray-600 hover:text-gray-900 border border-gray-300 rounded-md px-3 py-1.5 hover:bg-gray-50"
+                onClick={resetAllFilters}
+              >
+                <RefreshCw className="h-4 w-4" />
+                Reset Filters
+              </button>
+              <button
+                className="inline-flex items-center gap-1 text-sm font-semibold text-blue-600 hover:text-blue-800 border border-blue-300 rounded-md px-3 py-1.5 hover:bg-blue-50"
+                onClick={saveAllPreferences}
+              >
+                <BookmarkPlus className="h-4 w-4" />
+                Save Preferences
+              </button>
+              {savedMessageVisible && (
+                <span className="text-sm font-medium text-green-600 ml-2 animate-pulse">
+                  Saved!
+                </span>
+              )}
+            </div>
             <SlidersHorizontal className="h-5 w-5 text-gray-500" />
           </div>
         </div>
@@ -873,12 +902,27 @@ export default function Discover({ cities }: DiscoverProps) {
             {filteredCities.length === 0 && (
               <div className="text-center py-12 bg-gray-50 rounded-lg">
                 <p className="text-gray-500 text-lg">No cities match your filters</p>
-                <button 
-                  onClick={resetAllFilters}
-                  className="mt-4 px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
-                >
-                  Reset Filters
-                </button>
+                <div className="flex items-center gap-3">
+                  <button
+                    className="inline-flex items-center gap-1 text-lg font-semibold text-gray-600 hover:text-gray-900 border border-gray-300 rounded-md px-3 py-1.5 hover:bg-gray-50"
+                    onClick={resetAllFilters}
+                  >
+                    <RefreshCw className="h-5 w-5" />
+                    Reset All
+                  </button>
+                  <button
+                    className="inline-flex items-center gap-1 text-lg font-semibold text-blue-600 hover:text-blue-800 border border-blue-300 rounded-md px-3 py-1.5 hover:bg-blue-50"
+                    onClick={saveAllPreferences}
+                  >
+                    <BookmarkPlus className="h-5 w-5" />
+                    Save Preferences
+                  </button>
+                  {savedMessageVisible && (
+                    <span className="text-lg font-medium text-green-600 ml-2 animate-pulse">
+                      Saved!
+                    </span>
+                  )}
+                </div>
               </div>
             )}
           </>

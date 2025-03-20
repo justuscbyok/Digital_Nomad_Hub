@@ -2,7 +2,7 @@ import uuid
 from google.cloud import bigquery
 from passlib.context import CryptContext
 from typing import Optional, List
-from backend.database import client, USERS_TABLE, TRAVEL_PLANS_TABLE, PREFERENCES_TABLE
+from database import client, USERS_TABLE, TRAVEL_PLANS_TABLE, PREFERENCES_TABLE
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 

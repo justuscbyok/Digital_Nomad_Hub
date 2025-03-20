@@ -3,6 +3,7 @@ import citiesReducer from './slices/citiesSlice';
 import journeyReducer from './slices/journeySlice';
 import profileReducer from './slices/profileSlice';
 import authReducer from './slices/authSlice';
+import reviewsReducer from './slices/reviewsSlice';
 
 export const store = configureStore({
   reducer: {
@@ -10,6 +11,7 @@ export const store = configureStore({
     cities: citiesReducer,
     journey: journeyReducer,
     profile: profileReducer,
+    reviews: reviewsReducer,
   },
 });
 

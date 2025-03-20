@@ -106,7 +106,7 @@ export default function Dashboard() {
           <>
             <div className="bg-white p-6 rounded-lg shadow-lg mb-8">
               <h2 className="text-2xl font-bold text-gray-800 mb-6">Plan Your Journey</h2>
-              <JourneyPlanner selectedCities={selectedCities.slice(0, 2)} />
+              <JourneyPlanner cities={cities} />
             </div>
           </>
         );

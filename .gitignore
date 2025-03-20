@@ -22,3 +22,11 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Google Cloud credentials
+backend/capstone-justus-51d7198c35df.json
+
+# Python cache files
+__pycache__/
+*.py[cod]
+*$py.class
