@@ -15,7 +15,7 @@ FROM nginx:alpine
 COPY --from=build /app/dist /usr/share/nginx/html
 
 # Copy our custom nginx config
-COPY my-nginx.conf /etc/nginx/conf.d/default.conf
+COPY nginx.conf /etc/nginx/conf.d/default.conf
 
 # Expose port 8080 so Cloud Run can talk to it
 EXPOSE 8080
