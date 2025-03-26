@@ -1,26 +1,26 @@
 # 1) Build stage
 FROM node:18-alpine AS build
-
-# Create and set the working directory
 WORKDIR /app
 
-# Copy package files and install dependencies
 COPY package*.json ./
 RUN npm install
 
-# Copy the rest of your app's files and build
 COPY . .
 RUN npm run build
 
 # 2) Production stage (Nginx)
 FROM nginx:alpine
 
-# Copy build output from the first stage
+# Copy build output
 COPY --from=build /app/dist /usr/share/nginx/html
 
-# Expose port 80 (Cloud Run will route traffic to this port)
-EXPOSE 80
+# Copy our custom nginx config
+COPY my-nginx.conf /etc/nginx/conf.d/default.conf
 
-# Start Nginx
+# Expose port 8080 so Cloud Run can talk to it
+EXPOSE 8080
+
 CMD ["nginx", "-g", "daemon off;"]
+
+
 
