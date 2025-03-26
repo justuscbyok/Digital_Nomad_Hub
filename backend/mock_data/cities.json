@@ -1,0 +1,41 @@
+{
+  "cities": [
+    {
+      "id": "bangkok",
+      "name": "Bangkok",
+      "country": "Thailand",
+      "coordinates": {
+        "lat": 13.7563,
+        "lng": 100.5018
+      },
+      "metrics": {
+        "climate": {
+          "averageTemperature": 28,
+          "precipitation": 1648,
+          "seasons": ["Hot", "Rainy", "Cool"]
+        },
+        "cost": {
+          "housing": 800,
+          "food": 400,
+          "transportation": 100,
+          "entertainment": 300,
+          "costOfLivingIndex": 60
+        },
+        "infrastructure": {
+          "averageWifiSpeed": 55,
+          "coworkingSpaces": 45
+        },
+        "qualityOfLife": {
+          "healthcareIndex": 80,
+          "safetyIndex": 65,
+          "pollutionIndex": 40
+        },
+        "digitalNomad": {
+          "communitySize": 5000,
+          "monthlyMeetups": 25,
+          "visaRequirements": "Visa on arrival"
+        }
+      }
+    }
+  ]
+}
