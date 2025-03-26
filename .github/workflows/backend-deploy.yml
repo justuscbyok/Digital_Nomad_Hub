@@ -32,13 +32,13 @@ jobs:
         run: |
           cd backend
           gcloud auth configure-docker
-          docker build -t gcr.io/${{ secrets.GCP_PROJECT_ID }}/roomiesify:latest .
-          docker push gcr.io/${{ secrets.GCP_PROJECT_ID }}/roomiesify:latest
+          docker build -t gcr.io/${{ secrets.GCP_PROJECT_ID }}/digitalnomadhub:latest .
+          docker push gcr.io/${{ secrets.GCP_PROJECT_ID }}/digitalnomadhub:latest
 
       - name: Deploy to Cloud Run
         run: |
-          gcloud run deploy roomiesify \
-            --image gcr.io/${{ secrets.GCP_PROJECT_ID }}/roomiesify:latest \
+          gcloud run deploy digitalnomadhub \
+            --image gcr.io/${{ secrets.GCP_PROJECT_ID }}/digitalnomadhub:latest \
             --platform managed \
             --region us-central1 \
             --allow-unauthenticated
