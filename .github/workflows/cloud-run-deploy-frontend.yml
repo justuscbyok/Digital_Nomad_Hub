@@ -1,0 +1,54 @@
+name: Deploy Frontend to Cloud Run
+
+on:
+  push:
+    branches:
+      - deploy-frontend
+    # Optional path filter: only run if root files change
+    # (remove "paths" if you want to run on every push to main)
+    paths:
+      - '**'        # or specify only certain folders/files if needed
+
+jobs:
+  deploy-frontend:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      id-token: write
+
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+
+      - name: Authenticate with Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+      - name: Set up gcloud
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Build and push Docker image
+        run: |
+          # Since your Dockerfile is at the project root,
+          # no need to "cd" anywhere
+          gcloud auth configure-docker
+          
+          # Build the Docker image (change the name as desired)
+          docker build -t gcr.io/${{ secrets.GCP_PROJECT_ID }}/digitalnomadhubfrontend:latest .
+          
+          # Push the image to Google Container Registry (or Artifact Registry)
+          docker push gcr.io/${{ secrets.GCP_PROJECT_ID }}/digitalnomadhubfrontend:latest
+
+      - name: Deploy to Cloud Run
+        run: |
+          # Deploy to Cloud Run
+          gcloud run deploy digitalnomadhubfrontend \
+            --image gcr.io/${{ secrets.GCP_PROJECT_ID }}/digitalnomadhubfrontend:latest \
+            --platform managed \
+            --region us-central1 \
+            --allow-unauthenticated
+
+
+

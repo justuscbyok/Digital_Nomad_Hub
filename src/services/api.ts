@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: 'http://127.0.0.1:8000',
+  baseURL: 'https://digitalnomadhub-286894524369.us-central1.run.app',
   timeout: 10000,
   headers: {
     'Content-Type': 'application/x-www-form-urlencoded',
